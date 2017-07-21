@@ -101,7 +101,14 @@ settings.outputFolder = [uigetdir(pwd, 'Please select output folder') filesep];
 % settings.outputFolder = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Processing/';
 
 %% perform seed detection for channel1
-cd XPIWIT
+if (ispc)
+    cd XPIWIT\Windows\
+elseif (ismac)
+    cd XPIWIT\MacOSX\
+elseif (isunix)
+    cd XPIWIT\Ubuntu\
+end
+
 XPIWITCommand1 = ['./XPIWIT.sh ' ...
                  '--output "' settings.outputFolder '" ' ...
                  '--input "0, ' settings.inputChannel1Absolute ', 3, float" ' ...
@@ -126,7 +133,7 @@ if (ispc == true)
     XPIWITCommand2 = strrep(XPIWITCommand2, '\', '/');
 end
 system(XPIWITCommand2);
-cd ..;
+cd ../../;
 
 %% extract the file parts
 [folder1, settings.file1, ext1] = fileparts(settings.inputChannel1Absolute);
