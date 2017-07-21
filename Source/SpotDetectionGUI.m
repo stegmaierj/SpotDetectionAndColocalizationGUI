@@ -104,9 +104,9 @@ settings.outputFolder = [uigetdir(pwd, 'Please select output folder') filesep];
 if (ispc)
     cd XPIWIT\Windows\
 elseif (ismac)
-    cd XPIWIT\MacOSX\
+    cd XPIWIT/MacOSX/
 elseif (isunix)
-    cd XPIWIT\Ubuntu\
+    cd XPIWIT/Ubuntu/
 end
 
 XPIWITCommand1 = ['./XPIWIT.sh ' ...
