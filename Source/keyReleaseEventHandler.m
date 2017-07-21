@@ -250,6 +250,11 @@ function keyReleaseEventHandler(~,evt)
             updateVisualization;
         end
         
+        if (~isfield(settings, 'backgroundDots'))
+            GenerateBackgroundDots;
+            updateVisualization;
+        end        
+        
 %         index1 = settings.meanIntensityIndex;
 %         index2 = settings.meanIntensityIndex2;
         index1 = settings.integratedIntensityIndex;
