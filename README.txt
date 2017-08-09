@@ -24,8 +24,8 @@
  % XPIWIT - An XML Pipeline Wrapper for the Insight Toolkit, 
  % Bioinformatics, 2016, 32, 315-317.
  %
- % Stegmaier, J.; Otte, J. C.; Kobitski, A.; Bartschat, A.; Garcia, A.; Nienhaus, G. U.; Strähle, U. & Mikut, R. 
- % Fast Segmentation of Stained Nuclei in Terabyte-Scale, Time Resolved 3D Microscopy Image Stacks, 
- % PLoS ONE, 2014, 9, e90036
+ % Stegmaier, J.; Otte, J. C.; Kobitski, A.; Bartschat, A.; Garcia, A.; 
+ % Nienhaus, G. U.; Strähle, U. & Mikut, R., Fast Segmentation of Stained Nuclei 
+ % in Terabyte-Scale, Time Resolved 3D Microscopy Image Stacks, PLoS ONE, 2014, 9, e90036.
  %
  %%
