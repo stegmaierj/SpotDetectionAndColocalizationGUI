@@ -1,6 +1,6 @@
 %%
  % SpotDetectionAndColocalizationGUI.
- % Copyright (C) 2017 J. Stegmaier, A. Cunha, M. Schwarzkopf, H. Choi, N. Pierce
+ % Copyright (C) 2017 J. Stegmaier, M. Schwarzkopf, H. Choi, A. Cunha
  %
  % Licensed under the Apache License, Version 2.0 (the "License");
  % you may not use this file except in compliance with the License.
