@@ -43,8 +43,17 @@ for i=1:size(settings.seedPoints1Filtered,1)
     radius1 = settings.seedPoints1Filtered(index1,2)*sqrt(2);
     radius2 = settings.seedPoints2Filtered(index2,2)*sqrt(2);
     
+    %% switch the distance criterion used for counting a colocalization
+    if (settings.colocalizationCriterion < 0)
+        %% if smaller than zero, bounding sphere intersection is used
+        maxDistance = (radius1+radius2);
+    else
+        %% otherwise the provided distance in pixel is the maximum allowed centroid distance
+        maxDistance = settings.colocalizationCriterion;
+    end
+    
     %% only add detection if there was a single unambiguous match
-    if (index1 == i && distance1 <= (radius1+radius2))
+    if (index1 == i && distance1 <= maxDistance)
        ratio1 = settings.seedPoints1Filtered(i,9) / settings.seedPoints2Filtered(index2,9);
        ratio2 = settings.seedPoints2Filtered(index2,9) / settings.seedPoints1Filtered(i,9);
        settings.colocalizations1 = [settings.colocalizations1; settings.seedPoints1Filtered(i,:), distance1, radius1, ratio1];
@@ -63,7 +72,5 @@ settings.unColocalized2 = settings.seedPoints2Filtered(~ismember(settings.seedPo
 
 %% close the progress bar
 close(h);
-
-
 
 settings.dirtyFlag = false;
