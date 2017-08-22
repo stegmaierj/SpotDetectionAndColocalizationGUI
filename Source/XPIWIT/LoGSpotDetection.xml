@@ -22,7 +22,7 @@
                 <parameter key="SeriesIncrement" value="1" type="2" description="Index increment for the series reader"/>
                 <parameter key="SpacingX" value="1" type="1" description="Original spacing in the first dimension"/>
                 <parameter key="SpacingY" value="1" type="1" description="Original spacing in the second dimension"/>
-                <parameter key="SpacingZ" value="6.8267" type="1" description="Original spacing in the third dimension"/>
+                <parameter key="SpacingZ" value="6.7308" type="1" description="Original spacing in the third dimension"/>
                 <parameter key="InputMaximumValue" value="65535" type="1"/>
             </arguments>
         </item>

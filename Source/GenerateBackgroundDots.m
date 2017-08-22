@@ -40,7 +40,7 @@ originalDetections = unique([settings.seedPoints1Filtered(:,3:5); settings.seedP
 %% specify the region of interest based on the convex hull or using a manually drawn roi
 choice = questdlg('Would you like to manually draw a region of interest (e.g., if multiple samples are present in the image)', ...
 	'Background Detection', ...
-	'Yes','No','No');
+	'Yes','No', 'Skip', 'Skip');
 if (strcmp(choice, 'Yes'))
     fh = figure;
     imagesc(cat(3, imadjust(settings.imageChannel1MaxProj), imadjust(settings.imageChannel2MaxProj), zeros(size(settings.imageChannel1MaxProj))));
@@ -55,8 +55,11 @@ if (strcmp(choice, 'Yes'))
             detectionsInROI = [detectionsInROI; currentPoint];
         end
     end
-else
+elseif (strcmp(choice, 'No'))
     detectionsInROI = originalDetections;
+else
+    settings.backgroundDots = [];
+    return;
 end
 
 h = waitbar(0,'Generating background detections ...');
