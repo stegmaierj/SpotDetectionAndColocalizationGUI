@@ -114,7 +114,7 @@ for i=1:size(settings.seedPoints1,1)
             centroid = currentLocation';
         end    
         currentDistances = [currentDistances; norm(currentLocation' - centroid)];
-        settings.seedPoints1(i,3:5) = round(centroid);
+        settings.seedPoints1(i,3:5) = (centroid);
     end
 end
 
@@ -184,6 +184,6 @@ for i=1:size(settings.seedPoints2,1)
         else
             centroid = currentLocation';
         end    
-        settings.seedPoints2(i,3:5) = round(centroid);
+        settings.seedPoints2(i,3:5) = (centroid);
     end
 end
