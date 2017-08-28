@@ -55,7 +55,10 @@ function keyReleaseEventHandler(~,evt)
         end
         if (settings.thresholdMode == 3)
             settings.snrThreshold(settings.thresholdChannel) = settings.snrThreshold(settings.thresholdChannel) + 0.05;
-        end        
+        end
+        if (settings.thresholdMode == 4)
+            settings.fuseRedundantSeeds = settings.fuseRedundantSeeds + 1;
+        end
         
         %% filter the seed points based on the current SNR threshold
         if (settings.thresholdMode > 1)
@@ -74,6 +77,10 @@ function keyReleaseEventHandler(~,evt)
         if (settings.thresholdMode == 3)
             settings.snrThreshold(settings.thresholdChannel) = max(1, settings.snrThreshold(settings.thresholdChannel) - 0.05);
         end
+        if (settings.thresholdMode == 4)
+            settings.fuseRedundantSeeds = max(0, settings.fuseRedundantSeeds - 1);
+        end
+        
         %% filter the seed points based on the current SNR threshold
         if (settings.thresholdMode > 1)
             settings.showDetections = true;
@@ -158,7 +165,8 @@ function keyReleaseEventHandler(~,evt)
         fprintf(resultFile, '---------------------- Parameters ---------------------\n');
         fprintf(resultFile, 'Gamma: %f, %f\n', settings.gamma(1), settings.gamma(2));
         fprintf(resultFile, 'Global Threshold: %f, %f\n', settings.globalThreshold(1), settings.globalThreshold(2));
-        fprintf(resultFile, 'SNR Threshold: %f, %f\n\n', settings.snrThreshold(1), settings.snrThreshold(2));
+        fprintf(resultFile, 'SNR Threshold: %f, %f\n', settings.snrThreshold(1), settings.snrThreshold(2));
+        fprintf(resultFile, 'Fusion Radius: %f\n\n', settings.fuseRedundantSeeds);
         
         fprintf(resultFile, '----------------------- Results -----------------------\n');
         fprintf(resultFile, 'Total Detections Channel 1: %i\n', size(settings.seedPoints1,1));
@@ -209,7 +217,7 @@ function keyReleaseEventHandler(~,evt)
         settings.maximumProjectionMode = ~settings.maximumProjectionMode;
         updateVisualization;
     elseif (strcmp(evt.Character, 't'))
-        settings.thresholdMode = mod(settings.thresholdMode, 3) + 1;
+        settings.thresholdMode = mod(settings.thresholdMode, 4) + 1;
         updateVisualization;
 	elseif (strcmp(evt.Character, 'i'))
         settings.showIDs = ~settings.showIDs;

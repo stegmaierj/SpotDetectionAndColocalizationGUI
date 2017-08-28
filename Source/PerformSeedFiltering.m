@@ -39,6 +39,50 @@ settings.seedPoints2Filtered = settings.seedPoints2(validIndices2, :);
 settings.dirtyFlag = true;
 settings.showColocalization = false;
 
+%% FUSE REDUNDANT SEED POINTS
+if (size(settings.seedPoints1Filtered, 1) > 1 && settings.fuseRedundantSeeds > 0)
+    %% get the current locations and calculate the linkage
+    currentLinkage = linkage(settings.seedPoints1Filtered(:,3:5), 'ward', 'euclidean', 'savememory', 'on');
+
+    %% identify the clusters based on the minimum radius
+    clusters = cluster(currentLinkage, 'Cutoff', settings.fuseRedundantSeeds, 'Criterion', 'distance');
+    clusterIndices = unique(clusters);
+    combinedCentroids = [];
+    currentLabel = 1;
+    for k=clusterIndices'
+
+        %% find the region with the maximum membership degree
+        currentIndices = find(clusters==k);
+
+        combinedCentroids = [combinedCentroids; currentLabel, squeeze((mean(settings.seedPoints1Filtered(currentIndices,2:5), 1))), squeeze(mean(settings.seedPoints1Filtered(currentIndices,6:end), 1))];
+        currentLabel = currentLabel+1;
+    end
+
+    settings.seedPoints1Filtered = combinedCentroids;
+end
+
+if (size(settings.seedPoints2Filtered, 1) > 1 && settings.fuseRedundantSeeds > 0)
+    %% get the current locations and calculate the linkage
+    currentLinkage = linkage(settings.seedPoints2Filtered(:,3:5), 'ward', 'euclidean', 'savememory', 'on');
+
+    %% identify the clusters based on the minimum radius
+    clusters = cluster(currentLinkage, 'Cutoff', settings.fuseRedundantSeeds, 'Criterion', 'distance');
+    clusterIndices = unique(clusters);
+    combinedCentroids = [];
+    currentLabel = 1;
+    for k=clusterIndices'
+
+        %% find the region with the maximum membership degree
+        currentIndices = find(clusters==k);
+
+        combinedCentroids = [combinedCentroids; currentLabel, squeeze((mean(settings.seedPoints2Filtered(currentIndices,2:5), 1))), squeeze(mean(settings.seedPoints2Filtered(currentIndices,6:end), 1))];
+        currentLabel = currentLabel+1;
+    end
+
+    settings.seedPoints2Filtered = combinedCentroids;
+end
+%% END FUSE REDUNDANT SEED POINTS
+
 settings.currentKDTree1 = KDTreeSearcher(settings.seedPoints1Filtered(:,3:4));
 settings.currentKDTree2 = KDTreeSearcher(settings.seedPoints2Filtered(:,3:4));
 settings.colocalizations1 = [];

@@ -59,7 +59,7 @@ currentDistances = [];
 for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
-    currentLocation = settings.seedPoints1(i,3:5);
+    currentLocation = round(settings.seedPoints1(i,3:5));
     innerRadius = round(settings.seedPoints1(i,2)*sqrt(2));
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
@@ -131,7 +131,7 @@ settings.seedPoints2(:,end+1) = 0;
 for i=1:size(settings.seedPoints2,1)
     
     %% get the current location and calculate the radii
-    currentLocation = settings.seedPoints2(i,3:5);
+    currentLocation = round(settings.seedPoints2(i,3:5));
     innerRadius = round(settings.seedPoints2(i,2)*sqrt(2));
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
@@ -187,3 +187,5 @@ for i=1:size(settings.seedPoints2,1)
         settings.seedPoints2(i,3:5) = (centroid);
     end
 end
+
+PerformSeedFiltering;

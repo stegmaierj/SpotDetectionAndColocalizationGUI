@@ -162,6 +162,7 @@ textColors = {'white', 'red'};
 text('String', ['Gamma: ' num2str(settings.gamma(1)) ', ' num2str(settings.gamma(2))], 'FontSize', settings.fontSize, 'Color', textColors{(settings.thresholdMode == 1) + 1}, 'Units', 'normalized', 'Position', [0.01 0.98], 'Background', 'black');
 text('String', ['Global Threshold: ' num2str(settings.globalThreshold(1)) ', ' num2str(settings.globalThreshold(2))], 'FontSize', settings.fontSize, 'Color', textColors{(settings.thresholdMode == 2) + 1}, 'Units', 'normalized', 'Position', [0.01 0.94], 'Background', 'black');
 text('String', ['SNR Threshold: ' num2str(settings.snrThreshold(1)) ', ' num2str(settings.snrThreshold(2))], 'FontSize', settings.fontSize, 'Color', textColors{(settings.thresholdMode == 3) + 1}, 'Units', 'normalized', 'Position', [0.01 0.90], 'Background', 'black');
+text('String', ['Fusion Radius: ' num2str(settings.fuseRedundantSeeds)], 'FontSize', settings.fontSize, 'Color', textColors{(settings.thresholdMode == 4) + 1}, 'Units', 'normalized', 'Position', [0.01 0.86], 'Background', 'black');
 
 if (settings.showScaleBar)
     if (isfield(settings, 'scaleBar') && ishandle(settings.scaleBar))

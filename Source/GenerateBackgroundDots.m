@@ -30,10 +30,6 @@
  %
  %%
 
-%% compute the average radius of colocalized detections in both channels
-averageRadius = round(mean([settings.colocalizations1(:,2); settings.colocalizations2(:,2)] * sqrt(2)));
-numBackgroundSamples = size(settings.colocalizations1,1);
-
 %% use all filtered detections
 originalDetections = unique([settings.seedPoints1Filtered(:,3:5); settings.seedPoints2Filtered(:,3:5)], 'rows');
 
@@ -66,6 +62,10 @@ h = waitbar(0,'Generating background detections ...');
 
 %% create the delaunay triangulation
 DT = delaunayTriangulation(detectionsInROI);
+
+%% compute the average radius of colocalized detections in both channels
+averageRadius = round(mean([settings.colocalizations1(:,2); settings.colocalizations2(:,2)] * sqrt(2)));
+numBackgroundSamples = size(settings.colocalizations1,1);
 
 %% sample the background dots as the incenters of the tetrahedra
 backgroundDots = [];
