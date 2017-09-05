@@ -36,21 +36,22 @@ clear all;
 global settings;
 
 %% ask for voxel resulution
-prompt = {'Lateral Voxel Size (xy):','Axial Voxel Size (z):', 'Minimum Object Diameter in Pixel (3,5,7,...)', 'Maximum Object Diameter in Pixel (3,5,7,...)', 'Gaussian Smoothing Variance (Default: 1)', 'Weighted Centroid (Default: 0)', 'Coloc. Criterion (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in Pixel)'};
+prompt = {'Lateral Voxel Size (xy):','Axial Voxel Size (z):', 'Minimum Object Diameter in Pixel (3,5,7,...)', 'Maximum Object Diameter in Pixel (3,5,7,...)', 'Gaussian Smoothing Variance (Default: 1)', 'Weighted Centroid (Default: 0)', 'Coloc. Criterion (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in Pixel)', 'Axial Coloc. Factor (1: Same as lateral, <1: Allow larger distances)'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
-defaultans = {'0.0624','0.42', '3', '9', '1', '0', '-1'};
+defaultans = {'0.0624','0.42', '3', '9', '1', '0', '-1', '1'};
 answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
 settings.physicalSpacingXY = str2double(answer{1});
 settings.physicalSpacingZ = str2double(answer{2});
 settings.zscale = str2double(answer{2}) / str2double(answer{1});
-settings.minSigma = ((str2double(answer{3})-1)/2) / sqrt(2);
-settings.maxSigma = ((str2double(answer{4})-1)/2) / sqrt(2);
+settings.minSigma = ((str2double(answer{3})-1)/2);
+settings.maxSigma = ((str2double(answer{4})-1)/2);
 settings.gaussianSigma = str2double(answer{5});
 settings.weightedCentroid = str2double(answer{6}) > 0;
 settings.colocalizationCriterion = str2double(answer{7});
+settings.axialColocalizationFactor = str2double(answer{8});
 settings.fuseRedundantSeeds = 0;
-settings.sigmaStep = 1/sqrt(2);
+settings.sigmaStep = 0.1;
 settings.offset = 1;
 settings.maximumProjectionMode = true;
 settings.currentSlice = 1;
@@ -159,6 +160,13 @@ settings.maxIntensity = max(max(settings.imageChannel1(:)), max(settings.imageCh
 
 settings.xLim = [0, size(settings.imageChannel1,1)];
 settings.yLim = [0, size(settings.imageChannel1,2)];
+
+%% adjust the scale conversion factor depending on the image dimensionality
+if (size(settings.imageChannel1, 3) > 1)
+    settings.scaleConversionFactor = sqrt(1.5);
+else
+    settings.scaleConversionFactor = 1;
+end
 
 %% load detected seed points
 settings.seedPoints1 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file1 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);

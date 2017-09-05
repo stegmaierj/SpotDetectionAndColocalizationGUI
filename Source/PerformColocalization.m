@@ -35,6 +35,9 @@ global settings;
 
 h = waitbar(0,'Performing colocalization for current threshold ...');
 
+settings.oldZScale = settings.zscale;
+settings.zscale = settings.zscale * settings.axialColocalizationFactor;
+
 %% generate the kd trees for the current threshold
 channel1KDTree = KDTreeSearcher([settings.seedPoints1Filtered(:,3), settings.seedPoints1Filtered(:,4), settings.seedPoints1Filtered(:,5)*settings.zscale]);
 channel2KDTree = KDTreeSearcher([settings.seedPoints2Filtered(:,3), settings.seedPoints2Filtered(:,4), settings.seedPoints2Filtered(:,5)*settings.zscale]);
@@ -45,11 +48,11 @@ settings.colocalizations2 = [];
 for i=1:size(settings.seedPoints1Filtered,1)
     
     %% get the scale of the current seed point and search a matching partner in channel 2
-    currentScale = settings.seedPoints1Filtered(i,2)*sqrt(2);
+    currentScale = settings.seedPoints1Filtered(i,2)*settings.scaleConversionFactor;
     [index2, distance2] = knnsearch(channel2KDTree, [settings.seedPoints1Filtered(i,3:4), settings.seedPoints1Filtered(i,5)*settings.zscale], 'K', 1);
     [index1, distance1] = knnsearch(channel1KDTree, [settings.seedPoints2Filtered(index2,3:4), settings.seedPoints2Filtered(index2,5)*settings.zscale], 'K', 1);
-    radius1 = settings.seedPoints1Filtered(index1,2)*sqrt(2);
-    radius2 = settings.seedPoints2Filtered(index2,2)*sqrt(2);
+    radius1 = settings.seedPoints1Filtered(index1,2)*settings.scaleConversionFactor;
+    radius2 = settings.seedPoints2Filtered(index2,2)*settings.scaleConversionFactor;
     
     %% switch the distance criterion used for counting a colocalization
     if (settings.colocalizationCriterion < 0)
@@ -81,4 +84,5 @@ settings.unColocalized2 = settings.seedPoints2Filtered(~ismember(settings.seedPo
 %% close the progress bar
 close(h);
 
+settings.zscale = settings.oldZScale;
 settings.dirtyFlag = false;

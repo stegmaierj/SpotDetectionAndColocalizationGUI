@@ -60,7 +60,7 @@ for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
     currentLocation = round(settings.seedPoints1(i,3:5));
-    innerRadius = round(settings.seedPoints1(i,2)*sqrt(2));
+    innerRadius = round(settings.seedPoints1(i,2)*settings.scaleConversionFactor);
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
@@ -132,7 +132,7 @@ for i=1:size(settings.seedPoints2,1)
     
     %% get the current location and calculate the radii
     currentLocation = round(settings.seedPoints2(i,3:5));
-    innerRadius = round(settings.seedPoints2(i,2)*sqrt(2));
+    innerRadius = round(settings.seedPoints2(i,2)*settings.scaleConversionFactor);
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges

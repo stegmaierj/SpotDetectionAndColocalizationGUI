@@ -113,8 +113,8 @@ else
     
     %% plot detections of the red channel
     if (~isempty(settings.seedPoints1Filtered) && settings.showDetections == true && (settings.currentChannel == 1 || settings.currentChannel == 3))
-        validIndices = settings.seedPoints1Filtered(:,5)-(settings.seedPoints1Filtered(:,2)*sqrt(2)) <= settings.currentSlice & ...
-                       settings.seedPoints1Filtered(:,5)+(settings.seedPoints1Filtered(:,2)*sqrt(2)) >= settings.currentSlice;
+        validIndices = settings.seedPoints1Filtered(:,5)-(settings.seedPoints1Filtered(:,2)*settings.scaleConversionFactor) <= settings.currentSlice & ...
+                       settings.seedPoints1Filtered(:,5)+(settings.seedPoints1Filtered(:,2)*settings.scaleConversionFactor) >= settings.currentSlice;
                    
         if (isfield(settings, 'colocalizations1') && ~isempty(settings.colocalizations1) && settings.showColocalization == true)
              validIndices = validIndices & ~ismember(settings.seedPoints1Filtered(:,1), settings.colocalizations1(:,1));
@@ -128,8 +128,8 @@ else
 
     %% plot detections of the green channel
     if (~isempty(settings.seedPoints2Filtered) && settings.showDetections == true && (settings.currentChannel == 2 || settings.currentChannel == 3))
-        validIndices = settings.seedPoints2Filtered(:,5)-(settings.seedPoints2Filtered(:,2)*sqrt(2)) <= settings.currentSlice & ...
-                       settings.seedPoints2Filtered(:,5)+(settings.seedPoints2Filtered(:,2)*sqrt(2)) >= settings.currentSlice;
+        validIndices = settings.seedPoints2Filtered(:,5)-(settings.seedPoints2Filtered(:,2)*settings.scaleConversionFactor) <= settings.currentSlice & ...
+                       settings.seedPoints2Filtered(:,5)+(settings.seedPoints2Filtered(:,2)*settings.scaleConversionFactor) >= settings.currentSlice;
                    
         if (isfield(settings, 'colocalizations2') && ~isempty(settings.colocalizations2) && settings.showColocalization == true)
              validIndices = validIndices & ~ismember(settings.seedPoints2Filtered(:,1), settings.colocalizations2(:,1));
@@ -143,10 +143,10 @@ else
     
     %% plot colocalized detections
     if (settings.showColocalization == true && isfield(settings, 'colocalizations1') && ~isempty(settings.colocalizations1))
-        validIndices1 = settings.colocalizations1(:,5)-(settings.colocalizations1(:,2)*sqrt(2)) <= settings.currentSlice & ...
-                        settings.colocalizations1(:,5)+(settings.colocalizations1(:,2)*sqrt(2)) >= settings.currentSlice;
-        validIndices2 = settings.colocalizations2(:,5)-(settings.colocalizations2(:,2)*sqrt(2)) <= settings.currentSlice & ...
-                        settings.colocalizations2(:,5)+(settings.colocalizations2(:,2)*sqrt(2)) >= settings.currentSlice;
+        validIndices1 = settings.colocalizations1(:,5)-(settings.colocalizations1(:,2)*settings.scaleConversionFactor) <= settings.currentSlice & ...
+                        settings.colocalizations1(:,5)+(settings.colocalizations1(:,2)*settings.scaleConversionFactor) >= settings.currentSlice;
+        validIndices2 = settings.colocalizations2(:,5)-(settings.colocalizations2(:,2)*settings.scaleConversionFactor) <= settings.currentSlice & ...
+                        settings.colocalizations2(:,5)+(settings.colocalizations2(:,2)*settings.scaleConversionFactor) >= settings.currentSlice;
         
        plot(settings.colocalizations1(validIndices1,3), settings.colocalizations1(validIndices1,4), 'oy');
        plot(settings.colocalizations2(validIndices2,3), settings.colocalizations2(validIndices2,4), 'oy');
