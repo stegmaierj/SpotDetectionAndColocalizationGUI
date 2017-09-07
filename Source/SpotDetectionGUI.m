@@ -51,7 +51,7 @@ settings.weightedCentroid = str2double(answer{6}) > 0;
 settings.colocalizationCriterion = str2double(answer{7});
 settings.axialColocalizationFactor = str2double(answer{8});
 settings.fuseRedundantSeeds = 0;
-settings.sigmaStep = 0.1;
+settings.sigmaStep = 1.0;
 settings.offset = 1;
 settings.maximumProjectionMode = true;
 settings.currentSlice = 1;
@@ -162,11 +162,11 @@ settings.xLim = [0, size(settings.imageChannel1,1)];
 settings.yLim = [0, size(settings.imageChannel1,2)];
 
 %% adjust the scale conversion factor depending on the image dimensionality
-if (size(settings.imageChannel1, 3) > 1)
-    settings.scaleConversionFactor = sqrt(1.5);
-else
-    settings.scaleConversionFactor = 1;
-end
+% if (size(settings.imageChannel1, 3) > 1)
+%     settings.scaleConversionFactor = sqrt(1.5);
+% else
+settings.scaleConversionFactor = 1;
+% end
 
 %% load detected seed points
 settings.seedPoints1 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file1 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);
