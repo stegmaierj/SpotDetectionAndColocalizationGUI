@@ -163,14 +163,16 @@ function keyReleaseEventHandler(~,evt)
         fprintf(resultFile, 'File Channel 2: %s\n\n', settings.file2);
 
         fprintf(resultFile, '---------------------- Parameters ---------------------\n');
-        fprintf(resultFile, 'Lateral Voxel Size: %f\n', settings.physicalSpacingXY);
-        fprintf(resultFile, 'Axial Voxel Size: %f\n', settings.physicalSpacingZ);
-        fprintf(resultFile, 'Minimum Object Diameter: %f\n', settings.minSigma*2+1);
-        fprintf(resultFile, 'Maximum Object Diameter: %f\n', settings.maxSigma*2+1);
-        fprintf(resultFile, 'Gaussian Smoothing Variance: %f\n', settings.gaussianSigma);
-        fprintf(resultFile, 'Weighted Centroid: %f\n', settings.weightedCentroid);
-        fprintf(resultFile, 'Colocalization Criterion: %f\n\n', settings.colocalizationCriterion);
-        fprintf(resultFile, 'Axial Colocalization Factor: %f\n\n', settings.axialColocalizationFactor);
+        fprintf(resultFile, 'd_lateral (mu): %f\n', settings.physicalSpacingXY);
+        fprintf(resultFile, 'd_axial (mu): %f\n', settings.physicalSpacingZ);
+        fprintf(resultFile, 'sigma_pre (mu): %f\n', settings.gaussianSigma);
+        fprintf(resultFile, 'sigma_min (mu): %f\n', settings.minSigma);
+        fprintf(resultFile, 'sigma_max (mu): %f\n', settings.maxSigma);
+        fprintf(resultFile, 'n_scale: %f\n', settings.numScales);
+        %fprintf(resultFile, 'Weighted Centroid: %f\n', settings.weightedCentroid);
+        fprintf(resultFile, 'd_coloc: %f\n\n', settings.colocalizationCriterion);
+        fprintf(resultFile, 'axial coloc. factor: %f\n\n', settings.axialColocalizationFactor);
+        fprintf(resultFile, 'Use 4D scale-space: %f\n', settings.use4DScaleSpace);
         
         fprintf(resultFile, 'Gamma: %f, %f\n', settings.gamma(1), settings.gamma(2));
         fprintf(resultFile, 'Global Threshold: %f, %f\n', settings.globalThreshold(1), settings.globalThreshold(2));

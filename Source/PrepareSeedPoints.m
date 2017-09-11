@@ -32,16 +32,6 @@
 
 global settings;
 
-%% adjust seed points 1
-settings.seedPoints1(:,3) = settings.seedPoints1(:,3)+settings.offset;
-settings.seedPoints1(:,4) = settings.seedPoints1(:,4)+settings.offset;
-settings.seedPoints1(:,5) = round(settings.seedPoints1(:,5)/settings.zscale)+settings.offset;
-
-%% adjust seed points 2
-settings.seedPoints2(:,3) = settings.seedPoints2(:,3)+settings.offset;
-settings.seedPoints2(:,4) = settings.seedPoints2(:,4)+settings.offset;
-settings.seedPoints2(:,5) = round(settings.seedPoints2(:,5)/settings.zscale)+settings.offset;
-
 %% perform local adaptive threshold for all seed points of image 1
 settings.seedPoints1(:,end+1) = 0;
 settings.meanIntensityIndex = size(settings.seedPoints1,2);
@@ -60,7 +50,7 @@ for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
     currentLocation = round(settings.seedPoints1(i,3:5));
-    innerRadius = round(settings.seedPoints1(i,2)*settings.scaleConversionFactor);
+    innerRadius = settings.radiusMultiplier*round(settings.seedPoints1(i,2));
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
@@ -114,12 +104,9 @@ for i=1:size(settings.seedPoints1,1)
             centroid = currentLocation';
         end    
         currentDistances = [currentDistances; norm(currentLocation' - centroid)];
-        settings.seedPoints1(i,3:5) = (centroid);
+        settings.seedPoints1(i,3:5) = centroid;
     end
 end
-
-blubb = sum(currentDistances > 1);
-mypercentage = 100 * blubb / length(currentDistances);
 
 %% perform local adaptive threshold for all seed points of image 2
 settings.seedPoints2(:,end+1) = 0;
@@ -132,7 +119,7 @@ for i=1:size(settings.seedPoints2,1)
     
     %% get the current location and calculate the radii
     currentLocation = round(settings.seedPoints2(i,3:5));
-    innerRadius = round(settings.seedPoints2(i,2)*settings.scaleConversionFactor);
+    innerRadius = settings.radiusMultiplier*round(settings.seedPoints2(i,2));
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
@@ -184,7 +171,7 @@ for i=1:size(settings.seedPoints2,1)
         else
             centroid = currentLocation';
         end    
-        settings.seedPoints2(i,3:5) = (centroid);
+        settings.seedPoints2(i,3:5) = centroid;
     end
 end
 

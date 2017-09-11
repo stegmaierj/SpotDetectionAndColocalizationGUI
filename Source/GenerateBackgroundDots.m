@@ -46,7 +46,7 @@ if (strcmp(choice, 'Yes'))
     
     detectionsInROI = [];
     for i=1:size(originalDetections,1)
-       currentPoint = originalDetections(i,:);
+       currentPoint = round(originalDetections(i,:));
         if (convexImage(currentPoint(2), currentPoint(1)) > 0)
             detectionsInROI = [detectionsInROI; currentPoint];
         end
@@ -64,7 +64,7 @@ h = waitbar(0,'Generating background detections ...');
 DT = delaunayTriangulation(detectionsInROI);
 
 %% compute the average radius of colocalized detections in both channels
-averageRadius = round(mean([settings.colocalizations1(:,2); settings.colocalizations2(:,2)] * sqrt(2)));
+averageRadius = round(mean([settings.colocalizations1(:,2); settings.colocalizations2(:,2)]));
 numBackgroundSamples = size(settings.colocalizations1,1);
 
 %% sample the background dots as the incenters of the tetrahedra

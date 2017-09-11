@@ -20,9 +20,9 @@
                 <parameter key="SeriesMinIndex" value="0" type="2" description="Start index for the series reader"/>
                 <parameter key="SeriesMaxIndex" value="499" type="2" description="End index for the series reader"/>
                 <parameter key="SeriesIncrement" value="1" type="2" description="Index increment for the series reader"/>
-                <parameter key="SpacingX" value="1" type="1" description="Original spacing in the first dimension"/>
-                <parameter key="SpacingY" value="1" type="1" description="Original spacing in the second dimension"/>
-                <parameter key="SpacingZ" value="%ZVSXYRATIO%" type="1" description="Original spacing in the third dimension"/>
+                <parameter key="SpacingX" value="%SPACINGX%" type="1" description="Original spacing in the first dimension"/>
+                <parameter key="SpacingY" value="%SPACINGY%" type="1" description="Original spacing in the second dimension"/>
+                <parameter key="SpacingZ" value="%SPACINGZ%" type="1" description="Original spacing in the third dimension"/>
                 <parameter key="InputMaximumValue" value="65535" type="1"/>
             </arguments>
         </item>
@@ -46,6 +46,8 @@
                 <parameter key="MinSigma" value="%MINSIGMA%" type="1" description="Minimum sigma value."/>
                 <parameter key="MaxSigma" value="%MAXSIGMA%" type="1" description="Maximum sigma value."/>
                 <parameter key="NormalizeAcrossScales" value="1" type="3" description="Normalize scales."/>
+				<parameter key="NormalizationExponent" value="%NORMALIZATIONEXPONENT%" type="1" description="Normalization exponent used for the scale space normalization."/>
+				<parameter key="WriteIntermediateResults" value="%WRITESCALESPACE%" type="3" description="If enabled, the intermediate LoG filtered images are also saved (32bit)."/>
             </arguments>
         </item>
         <item item_id="item_0006">
