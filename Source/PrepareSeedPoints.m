@@ -93,8 +93,10 @@ for i=1:size(settings.seedPoints1,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    intensitySum = intensitySum + settings.imageChannel1(k, j, l);
-                    centroid = centroid + settings.imageChannel1(k, j, l) * [j,k,l]';
+                    if (norm([j,k,l*settings.zscale] - (currentLocation .* [1,1,settings.zscale])) <= innerRadius)
+                        intensitySum = intensitySum + settings.imageChannel1(k, j, l);
+                        centroid = centroid + settings.imageChannel1(k, j, l) * [j,k,l]';
+                    end
                 end
             end
         end
@@ -161,8 +163,10 @@ for i=1:size(settings.seedPoints2,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    intensitySum = intensitySum + settings.imageChannel2(k, j, l);
-                    centroid = centroid + settings.imageChannel2(k, j, l) * [j,k,l]';
+                    if (norm([j,k,l*settings.zscale] - (currentLocation .* [1,1,settings.zscale])) <= innerRadius)
+                        intensitySum = intensitySum + settings.imageChannel2(k, j, l);
+                        centroid = centroid + settings.imageChannel2(k, j, l) * [j,k,l]';
+                    end
                 end
             end
         end
