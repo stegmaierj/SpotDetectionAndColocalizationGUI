@@ -46,6 +46,10 @@ settings.snrRatioIndex2 = size(settings.seedPoints1,2);
 settings.seedPoints1(:,end+1) = 0;
 settings.integratedIntensityIndex2 = size(settings.seedPoints1,2);
 currentDistances = [];
+
+%% create wait bar
+waitBarHandle = waitbar(0, 'Re-estimating centroids');
+
 for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
