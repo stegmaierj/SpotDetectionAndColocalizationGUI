@@ -251,6 +251,8 @@ function keyReleaseEventHandler(~,evt)
         settings.gamma = [1.0, 1.0];
         settings.globalThreshold = [0.0, 0.0];
         settings.snrThreshold = [1.0, 1.0];
+        settings.fuseRedundantSeeds = 0;
+        
         %% filter the seed points based on the current SNR threshold
         PerformSeedFiltering;
         updateVisualization;
