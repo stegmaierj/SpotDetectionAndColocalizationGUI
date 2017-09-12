@@ -112,6 +112,11 @@ for i=1:size(settings.seedPoints1,1)
         currentDistances = [currentDistances; norm(currentLocation' - centroid)];
         settings.seedPoints1(i,3:5) = centroid;
     end
+    
+    %% update the wait bar
+    if (mod(i, 100) == 0)
+        waitbar(0.5 * i / (size(settings.seedPoints1,1)), waitBarHandle);
+    end
 end
 
 %% perform local adaptive threshold for all seed points of image 2
@@ -181,6 +186,13 @@ for i=1:size(settings.seedPoints2,1)
         end    
         settings.seedPoints2(i,3:5) = centroid;
     end
+    
+    %% update the wait bar
+    if (mod(i, 100) == 0)
+        waitbar(0.5 + 0.5 * i / (size(settings.seedPoints2,1)-1), waitBarHandle);
+    end
 end
 
+%% remove the wait bar
+close(waitBarHandle);
 PerformSeedFiltering;

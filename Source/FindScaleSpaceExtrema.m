@@ -2,7 +2,7 @@
 function scaleSpaceExtrema = FindScaleSpaceExtrema(inputImage, scaleSpace, spacing, scaleRange, extremaThreshold)
 
 %% add fft convolution path
-addpath('ThirdParty/convnfft');
+%addpath('ThirdParty/convnfft');
 addpath('ThirdParty/saveastiff_4.3/');
 
 %% create wait bar
