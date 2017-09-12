@@ -177,7 +177,7 @@ function keyReleaseEventHandler(~,evt)
         fprintf(resultFile, 'Gamma: %f, %f\n', settings.gamma(1), settings.gamma(2));
         fprintf(resultFile, 'Global Threshold: %f, %f\n', settings.globalThreshold(1), settings.globalThreshold(2));
         fprintf(resultFile, 'SNR Threshold: %f, %f\n', settings.snrThreshold(1), settings.snrThreshold(2));
-        fprintf(resultFile, 'Fusion Radius: %f\n\n', settings.fuseRedundantSeeds);
+        fprintf(resultFile, 'Fusion Radius: %f\n\n', settings.fuseRedundantSeeds * settings.physicalSpacingXY);
 
         fprintf(resultFile, '----------------------- Results -----------------------\n');
         fprintf(resultFile, 'Total Detections Channel 1: %i\n', size(settings.seedPoints1,1));
