@@ -193,9 +193,6 @@ for i=1:size(settings.seedPoints2,1)
     end
 end
 
-<<<<<<< HEAD
-=======
 %% remove the wait bar
->>>>>>> 47529bfd84aaab85fa0cf854a5315cfd7d120d15
 close(waitBarHandle);
 PerformSeedFiltering;
