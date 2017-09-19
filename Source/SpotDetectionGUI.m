@@ -36,7 +36,7 @@ clear all;
 global settings;
 
 %% ask for voxel resulution
-prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (mu):', 'sigma_max (mu):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in Pixel):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
+prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
 defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
@@ -179,6 +179,8 @@ if (settings.use4DScaleSpace == false)
     settings.seedPoints2(:,3:4) = settings.seedPoints2(:,3:4) + settings.offset;
     settings.seedPoints1(:,5) = round(settings.seedPoints1(:,5) / settings.zscale + settings.offset);
     settings.seedPoints2(:,5) = round(settings.seedPoints2(:,5) / settings.zscale + settings.offset);
+    settings.seedPoints1(:,7:end) = [];
+    settings.seedPoints2(:,7:end) = [];
 else
     scaleRange = settings.minSigma:settings.sigmaStep:settings.maxSigma;
     numScales = length(scaleRange);

@@ -183,4 +183,5 @@ for i=1:size(settings.seedPoints2,1)
     end
 end
 
+close(waitBarHandle);
 PerformSeedFiltering;
