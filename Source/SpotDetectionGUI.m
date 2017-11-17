@@ -114,8 +114,6 @@ while ischar(currentLine)
     currentLine = strrep(currentLine, '%NORMALIZATIONEXPONENT%', num2str(2.5));
     currentLine = strrep(currentLine, '%WRITESCALESPACE%', num2str(settings.use4DScaleSpace));
     
-    str2double(sprintf('%.5f', settings.minSigma / settings.physicalSpacingXY)):str2double(sprintf('%.5f', (floor(100000 * settings.sigmaStep / settings.physicalSpacingXY) / 100000))):str2double(sprintf('%.5f', settings.maxSigma / settings.physicalSpacingXY))
-
     fprintf(xmlFile, currentLine);
     currentLine = fgets(templateFile);
 end
@@ -192,13 +190,13 @@ else
     for i=1:length(scaleRange)
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
     end    
-    settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
+    settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
 
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     for i=1:length(scaleRange)
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
     end    
-    settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
+    settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
     clear scaleSpace;
     try
         rmdir([settings.outputFolder 'input'], 's');
