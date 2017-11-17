@@ -54,12 +54,12 @@ for i=1:size(settings.seedPoints1,1)
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
-    rangeX = max(1, currentLocation(1)-innerRadius):min(size(settings.imageChannel1,1), currentLocation(1)+innerRadius);
-    rangeY = max(1, currentLocation(2)-innerRadius):min(size(settings.imageChannel1,2), currentLocation(2)+innerRadius);
+    rangeX = max(1, currentLocation(1)-innerRadius):min(size(settings.imageChannel1,2), currentLocation(1)+innerRadius);
+    rangeY = max(1, currentLocation(2)-innerRadius):min(size(settings.imageChannel1,1), currentLocation(2)+innerRadius);
     rangeZ = max(1, currentLocation(3)-round(innerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(innerRadius/settings.zscale));
         
-    rangeXBG = max(1, currentLocation(1)-outerRadius):min(size(settings.imageChannel1,1), currentLocation(1)+outerRadius);
-    rangeYBG = max(1, currentLocation(2)-outerRadius):min(size(settings.imageChannel1,2), currentLocation(2)+outerRadius);
+    rangeXBG = max(1, currentLocation(1)-outerRadius):min(size(settings.imageChannel1,2), currentLocation(1)+outerRadius);
+    rangeYBG = max(1, currentLocation(2)-outerRadius):min(size(settings.imageChannel1,1), currentLocation(2)+outerRadius);
     rangeZBG = max(1, currentLocation(3)-round(outerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(outerRadius/settings.zscale));
     
     %% extract intensity properties of the channel where the seeds were detected
@@ -93,8 +93,10 @@ for i=1:size(settings.seedPoints1,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    intensitySum = intensitySum + settings.imageChannel1(k, j, l);
-                    centroid = centroid + settings.imageChannel1(k, j, l) * [j,k,l]';
+                    if (norm([j,k,l*settings.zscale]) <= innerRadius)
+                        intensitySum = intensitySum + settings.imageChannel1(k, j, l);
+                        centroid = centroid + settings.imageChannel1(k, j, l) * [j,k,l]';
+                    end
                 end
             end
         end
@@ -123,11 +125,11 @@ for i=1:size(settings.seedPoints2,1)
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
-    rangeX = max(1, currentLocation(1)-innerRadius):min(size(settings.imageChannel2,1), currentLocation(1)+innerRadius);
-    rangeY = max(1, currentLocation(2)-innerRadius):min(size(settings.imageChannel2,2), currentLocation(2)+innerRadius);
+    rangeX = max(1, currentLocation(1)-innerRadius):min(size(settings.imageChannel2,2), currentLocation(1)+innerRadius);
+    rangeY = max(1, currentLocation(2)-innerRadius):min(size(settings.imageChannel2,1), currentLocation(2)+innerRadius);
     rangeZ = max(1, currentLocation(3)-round(innerRadius/settings.zscale)):min(size(settings.imageChannel2,3), currentLocation(3)+round(innerRadius/settings.zscale));
-    rangeXBG = max(1, currentLocation(1)-outerRadius):min(size(settings.imageChannel2,1), currentLocation(1)+outerRadius);
-    rangeYBG = max(1, currentLocation(2)-outerRadius):min(size(settings.imageChannel2,2), currentLocation(2)+outerRadius);
+    rangeXBG = max(1, currentLocation(1)-outerRadius):min(size(settings.imageChannel2,2), currentLocation(1)+outerRadius);
+    rangeYBG = max(1, currentLocation(2)-outerRadius):min(size(settings.imageChannel2,1), currentLocation(2)+outerRadius);
     rangeZBG = max(1, currentLocation(3)-round(outerRadius/settings.zscale)):min(size(settings.imageChannel2,3), currentLocation(3)+round(outerRadius/settings.zscale));
 
     %% extract intensity properties of the channel where the seeds were detected
@@ -161,8 +163,10 @@ for i=1:size(settings.seedPoints2,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    intensitySum = intensitySum + settings.imageChannel2(k, j, l);
-                    centroid = centroid + settings.imageChannel2(k, j, l) * [j,k,l]';
+                    if (norm([j,k,l*settings.zscale]) <= innerRadius)
+                        intensitySum = intensitySum + settings.imageChannel2(k, j, l);
+                        centroid = centroid + settings.imageChannel2(k, j, l) * [j,k,l]';
+                    end
                 end
             end
         end
