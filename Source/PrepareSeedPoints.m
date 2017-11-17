@@ -46,6 +46,10 @@ settings.snrRatioIndex2 = size(settings.seedPoints1,2);
 settings.seedPoints1(:,end+1) = 0;
 settings.integratedIntensityIndex2 = size(settings.seedPoints1,2);
 currentDistances = [];
+
+%% create wait bar
+waitBarHandle = waitbar(0, 'Re-estimating centroids');
+
 for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
@@ -93,7 +97,7 @@ for i=1:size(settings.seedPoints1,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    if (norm([j,k,l*settings.zscale]) <= innerRadius)
+                    if (norm([j,k,l*settings.zscale] - (currentLocation .* [1,1,settings.zscale])) <= innerRadius)
                         intensitySum = intensitySum + settings.imageChannel1(k, j, l);
                         centroid = centroid + settings.imageChannel1(k, j, l) * [j,k,l]';
                     end
@@ -107,6 +111,11 @@ for i=1:size(settings.seedPoints1,1)
         end    
         currentDistances = [currentDistances; norm(currentLocation' - centroid)];
         settings.seedPoints1(i,3:5) = centroid;
+    end
+    
+    %% update the wait bar
+    if (mod(i, 100) == 0)
+        waitbar(0.5 * i / (size(settings.seedPoints1,1)), waitBarHandle);
     end
 end
 
@@ -163,7 +172,7 @@ for i=1:size(settings.seedPoints2,1)
         for j=rangeX
             for k=rangeY
                 for l=rangeZ
-                    if (norm([j,k,l*settings.zscale]) <= innerRadius)
+                    if (norm([j,k,l*settings.zscale] - (currentLocation .* [1,1,settings.zscale])) <= innerRadius)
                         intensitySum = intensitySum + settings.imageChannel2(k, j, l);
                         centroid = centroid + settings.imageChannel2(k, j, l) * [j,k,l]';
                     end
@@ -177,6 +186,13 @@ for i=1:size(settings.seedPoints2,1)
         end    
         settings.seedPoints2(i,3:5) = centroid;
     end
+    
+    %% update the wait bar
+    if (mod(i, 100) == 0)
+        waitbar(0.5 + 0.5 * i / (size(settings.seedPoints2,1)-1), waitBarHandle);
+    end
 end
 
+%% remove the wait bar
+close(waitBarHandle);
 PerformSeedFiltering;

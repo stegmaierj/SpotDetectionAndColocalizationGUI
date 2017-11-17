@@ -125,26 +125,26 @@ function keyReleaseEventHandler(~,evt)
         %% write filtered seed points
         dlmwrite([settings.outputFolder settings.file1 '_filtered.csv'], settings.seedPoints1Filtered, ';');
         dlmwrite([settings.outputFolder settings.file2 '_filtered.csv'], settings.seedPoints2Filtered, ';');
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_filtered.csv'], 1);
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file2 '_filtered.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_filtered.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file2 '_filtered.csv'], 1);
 
         %% write colocalized seed points
         dlmwrite([settings.outputFolder settings.file1 '_colocalizations.csv'], settings.colocalizations1, ';');
         dlmwrite([settings.outputFolder settings.file2 '_colocalizations.csv'], settings.colocalizations2, ';');
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2;matchDistance;radius;intensityRatio', [settings.outputFolder settings.file1 '_colocalizations.csv'], 1);
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2;matchDistance;radius;intensityRatio', [settings.outputFolder settings.file2 '_colocalizations.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2;matchDistance;radius;intensityRatio', [settings.outputFolder settings.file1 '_colocalizations.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2;matchDistance;radius;intensityRatio', [settings.outputFolder settings.file2 '_colocalizations.csv'], 1);
 
         %% identify the non-colocalized seed points
         %         unColocalized1 = settings.seedPoints1Filtered(~ismember(settings.seedPoints1Filtered(:,1), settings.colocalizations1),:);
         %         unColocalized2 = settings.seedPoints2Filtered(~ismember(settings.seedPoints2Filtered(:,1), settings.colocalizations2),:);
         dlmwrite([settings.outputFolder settings.file1 '_uncolocalized.csv'], settings.unColocalized1, ';');
         dlmwrite([settings.outputFolder settings.file2 '_uncolocalized.csv'], settings.unColocalized2, ';');
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_uncolocalized.csv'], 1);
-        prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file2 '_uncolocalized.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_uncolocalized.csv'], 1);
+        prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file2 '_uncolocalized.csv'], 1);
 
         if (isfield(settings, 'backgroundDots'))
             dlmwrite([settings.outputFolder settings.file1 '_backgroundSamples.csv'], settings.backgroundDots, ';');
-            prepend2file('id;scale;xpos;ypos;zpos;intensity;seedPoint3D;seedPointCombinations;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_backgroundSamples.csv'], 1);
+            prepend2file('id;scale;xpos;ypos;zpos;intensity;meanWindowIntensity;snrCriterion;integratedIntensity;meanWindowIntensity2;snrCriterion2;integratedIntensity2', [settings.outputFolder settings.file1 '_backgroundSamples.csv'], 1);
         end
 
         %% add separator char at the first line
@@ -177,7 +177,7 @@ function keyReleaseEventHandler(~,evt)
         fprintf(resultFile, 'Gamma: %f, %f\n', settings.gamma(1), settings.gamma(2));
         fprintf(resultFile, 'Global Threshold: %f, %f\n', settings.globalThreshold(1), settings.globalThreshold(2));
         fprintf(resultFile, 'SNR Threshold: %f, %f\n', settings.snrThreshold(1), settings.snrThreshold(2));
-        fprintf(resultFile, 'Fusion Radius: %f\n\n', settings.fuseRedundantSeeds);
+        fprintf(resultFile, 'Fusion Radius: %f\n\n', settings.fuseRedundantSeeds * settings.physicalSpacingXY);
 
         fprintf(resultFile, '----------------------- Results -----------------------\n');
         fprintf(resultFile, 'Total Detections Channel 1: %i\n', size(settings.seedPoints1,1));
@@ -251,6 +251,8 @@ function keyReleaseEventHandler(~,evt)
         settings.gamma = [1.0, 1.0];
         settings.globalThreshold = [0.0, 0.0];
         settings.snrThreshold = [1.0, 1.0];
+        settings.fuseRedundantSeeds = 0;
+        
         %% filter the seed points based on the current SNR threshold
         PerformSeedFiltering;
         updateVisualization;

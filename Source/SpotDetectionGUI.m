@@ -36,7 +36,7 @@ clear all;
 global settings;
 
 %% ask for voxel resulution
-prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (mu):', 'sigma_max (mu):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in Pixel):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
+prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
 defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
@@ -49,7 +49,7 @@ settings.gaussianSigma = str2double(answer{3});
 settings.minSigma = str2double(answer{4});
 settings.maxSigma = str2double(answer{5});
 settings.numScales = str2double(answer{6});
-settings.sigmaStep = floor(1000000*(settings.maxSigma - settings.minSigma) / str2double(answer{6})) / 1000000;
+settings.sigmaStep = (settings.maxSigma - settings.minSigma) / (str2double(answer{6})-1);
 settings.weightedCentroid = 1;
 settings.colocalizationCriterion = str2double(answer{7});
 settings.axialColocalizationFactor = str2double(answer{8});
@@ -61,7 +61,7 @@ settings.gamma = [1,1];
 settings.globalThreshold = [0, 0];
 settings.thresholdChannel = 1;
 settings.thresholdMode = 1;
-settings.radiusMultiplier = 2;
+settings.radiusMultiplier = 3;
 settings.currentChannel = 3;
 settings.intensityIndex = 6;
 settings.colormapIndex = 1;
@@ -177,24 +177,25 @@ settings.yLim = [0, size(settings.imageChannel1,2)];
 if (settings.use4DScaleSpace == false)
     settings.seedPoints1 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file1 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);
     settings.seedPoints2 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file2 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);
-    settings.seedPoints1(:,3:5) = settings.seedPoints1(:,3:5) + settings.offset;
-    settings.seedPoints2(:,3:5) = settings.seedPoints2(:,3:5) + settings.offset;
-    settings.seedPoints1(:,5) = settings.seedPoints1(:,5) / settings.zscale;
-    settings.seedPoints2(:,5) = settings.seedPoints2(:,5) / settings.zscale;
+    settings.seedPoints1(:,3:4) = settings.seedPoints1(:,3:4) + settings.offset;
+    settings.seedPoints2(:,3:4) = settings.seedPoints2(:,3:4) + settings.offset;
+    settings.seedPoints1(:,5) = round(settings.seedPoints1(:,5) / settings.zscale + settings.offset);
+    settings.seedPoints2(:,5) = round(settings.seedPoints2(:,5) / settings.zscale + settings.offset);
+    settings.seedPoints1(:,7:end) = [];
+    settings.seedPoints2(:,7:end) = [];
 else
     scaleRange = settings.minSigma:settings.sigmaStep:settings.maxSigma;
     numScales = length(scaleRange);
     imageSize = size(settings.imageChannel1);
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
+    currentFiles = dir([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/*Scale=*.tif']);
     for i=1:length(scaleRange)
-        %scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%.4f', scaleRange(i)/settings.physicalSpacingXY) '.tif']);
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
     end    
     settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
 
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     for i=1:length(scaleRange)
-        %scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%.4f', scaleRange(i)/settings.physicalSpacingXY) '.tif']);
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
     end    
     settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
