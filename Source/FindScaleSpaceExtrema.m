@@ -10,7 +10,7 @@ waitBarHandle = waitbar(0, 'Creating LoG Scale Space');
 
 %% identify 
 if (extremaThreshold < 0)
-    extremaThreshold = mean(inputImage(:));
+    extremaThreshold = mean(inputImage(:) + std(inputImage(:)));
 end
 
 %% initialize the return value
