@@ -42,9 +42,9 @@
                 <parameter key="MaxThreads" value="8" type="2" description="Define the maximum number of concurrent threads"/>
                 <parameter key="Compression" value="1" type="3" description="If set to 1, compression is used for file saving."/>
                 <parameter key="Precision" value="16" type="2" description="Switch between uint8 and uint16 result image types."/>
-                <parameter key="Step" value="1.11111" type="1" description="Step width from min to max sigma."/>
+                <parameter key="Step" value="0.70000" type="1" description="Step width from min to max sigma."/>
                 <parameter key="MinSigma" value="1.00000" type="1" description="Minimum sigma value."/>
-                <parameter key="MaxSigma" value="11.00000" type="1" description="Maximum sigma value."/>
+                <parameter key="MaxSigma" value="8.00000" type="1" description="Maximum sigma value."/>
                 <parameter key="NormalizeAcrossScales" value="1" type="3" description="Normalize scales."/>
 				<parameter key="NormalizationExponent" value="2.5" type="1" description="Normalization exponent used for the scale space normalization."/>
 				<parameter key="WriteIntermediateResults" value="1" type="3" description="If enabled, the intermediate LoG filtered images are also saved (32bit)."/>
