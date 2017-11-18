@@ -188,13 +188,13 @@ else
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     currentFiles = dir([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/*Scale=*.tif']);
     for i=1:length(scaleRange)
-        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
+        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
     settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
 
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     for i=1:length(scaleRange)
-        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' num2str(i) '.tif']);
+        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
     settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
     clear scaleSpace;
