@@ -10,12 +10,16 @@ waitBarHandle = waitbar(0, 'Creating LoG Scale Space');
 
 %% identify 
 if (extremaThreshold < 0)
-    extremaThreshold = mean(inputImage(:));
+    %extremaThreshold = mean(inputImage(:)) + std(inputImage(:));
+    extremaThreshold = quantile(inputImage(:), 0.95);
 end
 
 %% initialize the return value
 currentId = 1;
 scaleSpaceExtrema = zeros(1000000, 6);
+
+%% stores for all locations if an extremum has already been found
+extremumFound = zeros(size(inputImage));
 
 %% loop through all pixels and scales to identify the scale space maxima
 waitbar(0, waitBarHandle, 'Extracting 4D Scale Space Extrema');
@@ -42,12 +46,13 @@ for s=1:(length(scaleRange))
 
                 %% check if current value is the maximum in the 4D neighborhood
                 currentMaxValue = squeeze(max(max(max(max(scaleSpace(rangeX, rangeY, rangeZ, :))))));
-                if (currentValue < currentMaxValue)
+                if (currentValue < currentMaxValue || extremumFound(i,j,k) == 1)
                     continue;
                 end
 
                 %% add the current scale space maximum
                 scaleSpaceExtrema(currentId, :) = [currentId, scaleRange(s), j, i, k, currentValue];
+                extremumFound(i,j,k) = 1;
                 currentId = currentId+1;
             end
         end

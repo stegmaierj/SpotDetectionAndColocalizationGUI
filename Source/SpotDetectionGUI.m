@@ -39,7 +39,7 @@ global settings;
 prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
-defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '11', '-1', '1', '1'};
+defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
 answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
 settings.physicalSpacingXY = str2double(answer{1});
 settings.physicalSpacingZ = str2double(answer{2});
@@ -106,14 +106,14 @@ while ischar(currentLine)
 
     currentLine = strrep(currentLine, '%SPACINGX%', num2str(1));
     currentLine = strrep(currentLine, '%SPACINGY%', num2str(1));
-    currentLine = strrep(currentLine, '%SPACINGZ%', num2str(settings.physicalSpacingZ / settings.physicalSpacingXY));
-    currentLine = strrep(currentLine, '%SIGMASTEP%', num2str(settings.sigmaStep / settings.physicalSpacingXY));
-    currentLine = strrep(currentLine, '%MINSIGMA%', num2str(settings.minSigma / settings.physicalSpacingXY));
-    currentLine = strrep(currentLine, '%MAXSIGMA%', num2str(settings.maxSigma / settings.physicalSpacingXY));
+    currentLine = strrep(currentLine, '%SPACINGZ%', sprintf('%.5f', settings.physicalSpacingZ / settings.physicalSpacingXY));
+    currentLine = strrep(currentLine, '%SIGMASTEP%', sprintf('%.5f', settings.sigmaStep / settings.physicalSpacingXY));
+    currentLine = strrep(currentLine, '%MINSIGMA%', sprintf('%.5f', settings.minSigma / settings.physicalSpacingXY));
+    currentLine = strrep(currentLine, '%MAXSIGMA%', sprintf('%.5f', settings.maxSigma / settings.physicalSpacingXY));
     currentLine = strrep(currentLine, '%GAUSSIANSIGMA%', num2str((settings.gaussianSigma / settings.physicalSpacingXY)^2));
     currentLine = strrep(currentLine, '%NORMALIZATIONEXPONENT%', num2str(2.5));
     currentLine = strrep(currentLine, '%WRITESCALESPACE%', num2str(settings.use4DScaleSpace));
-
+    
     fprintf(xmlFile, currentLine);
     currentLine = fgets(templateFile);
 end
@@ -188,34 +188,15 @@ else
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     currentFiles = dir([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/*Scale=*.tif']);
     for i=1:length(scaleRange)
-        currentInputFile = '';
-        for j=1:length(currentFiles)
-           currentScaleString = num2str(scaleRange(i)/settings.physicalSpacingXY);
-           if (length(currentScaleString) > 2)
-               currentScaleString = currentScaleString(1:end-1);
-           end
-           if (~isempty(strfind(currentFiles(j).name, settings.file1)) && ~isempty(strfind(currentFiles(j).name, currentScaleString)))
-               currentInputFile = [settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' currentFiles(j).name];
-           end
-        end
-        scaleSpace(:,:,:,i) = loadtiff(currentInputFile);
+        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
-    settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
+    settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
 
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     for i=1:length(scaleRange)
-        for j=1:length(currentFiles)
-           currentScaleString = num2str(scaleRange(i)/settings.physicalSpacingXY);
-           if (length(currentScaleString) > 2)
-               currentScaleString = currentScaleString(1:end-1);
-           end
-           if (~isempty(strfind(currentFiles(j).name, settings.file2)) && ~isempty(strfind(currentFiles(j).name, currentScaleString)))
-               currentInputFile = [settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' currentFiles(j).name];
-           end
-        end
-        scaleSpace(:,:,:,i) = loadtiff(currentInputFile);
+        scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
-    settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, 0);
+    settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
     clear scaleSpace;
     try
         rmdir([settings.outputFolder 'input'], 's');
