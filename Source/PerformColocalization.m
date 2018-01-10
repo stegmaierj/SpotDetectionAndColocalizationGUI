@@ -33,8 +33,6 @@
 %% get the global settings variable
 global settings;
 
-h = waitbar(0,'Performing colocalization for current threshold ...');
-
 %% generate the kd trees for the current threshold
 channel1KDTree = KDTreeSearcher([settings.seedPoints1Filtered(:,3)*settings.physicalSpacingXY, settings.seedPoints1Filtered(:,4)*settings.physicalSpacingXY, settings.seedPoints1Filtered(:,5)*settings.physicalSpacingZ * settings.axialColocalizationFactor]);
 channel2KDTree = KDTreeSearcher([settings.seedPoints2Filtered(:,3)*settings.physicalSpacingXY, settings.seedPoints2Filtered(:,4)*settings.physicalSpacingXY, settings.seedPoints2Filtered(:,5)*settings.physicalSpacingZ * settings.axialColocalizationFactor]);
@@ -67,17 +65,11 @@ for i=1:size(settings.seedPoints1Filtered,1)
        settings.colocalizations1 = [settings.colocalizations1; settings.seedPoints1Filtered(i,:), distance1, radius1, ratio1];
        settings.colocalizations2 = [settings.colocalizations2; settings.seedPoints2Filtered(index2,:), distance2, radius2, ratio2];
     end
-    
-    %% show status
-    if (mod(i,100) == 0 || i == size(settings.seedPoints1Filtered,1))
-        waitbar(i / size(settings.seedPoints1Filtered,1));
-    end
 end
 
 %% compute the non-colocalized seed points after filtering
 settings.unColocalized1 = settings.seedPoints1Filtered(~ismember(settings.seedPoints1Filtered(:,1), settings.colocalizations1),:);
 settings.unColocalized2 = settings.seedPoints2Filtered(~ismember(settings.seedPoints2Filtered(:,1), settings.colocalizations2),:);
 
-%% close the progress bar
-close(h);
+%% set dirty flag to false after the update
 settings.dirtyFlag = false;
