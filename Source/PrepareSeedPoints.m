@@ -45,6 +45,8 @@ settings.seedPoints1(:,end+1) = 0;
 settings.snrRatioIndex2 = size(settings.seedPoints1,2);
 settings.seedPoints1(:,end+1) = 0;
 settings.integratedIntensityIndex2 = size(settings.seedPoints1,2);
+settings.seedPoints1(:,end+1) = 0;
+settings.localReestimationIndex = size(settings.seedPoints1,2);
 currentDistances = [];
 
 %% create wait bar
@@ -91,7 +93,7 @@ for i=1:size(settings.seedPoints1,1)
     settings.seedPoints1(i,settings.integratedIntensityIndex2) = innerSum;
     
     %% re-estimate the weighted centroid based on the underlying intensity
-    if (settings.weightedCentroid == true)
+    if (settings.weightedCentroid > 0)
         centroid = zeros(3,1);
         intensitySum = 0;
         for j=rangeX
@@ -120,6 +122,7 @@ for i=1:size(settings.seedPoints1,1)
 end
 
 %% perform local adaptive threshold for all seed points of image 2
+settings.seedPoints2(:,end+1) = 0;
 settings.seedPoints2(:,end+1) = 0;
 settings.seedPoints2(:,end+1) = 0;
 settings.seedPoints2(:,end+1) = 0;
@@ -166,7 +169,7 @@ for i=1:size(settings.seedPoints2,1)
     settings.seedPoints2(i,settings.integratedIntensityIndex2) = innerSum;
     
     %% re-estimate the weighted centroid based on the underlying intensity
-    if (settings.weightedCentroid == true)
+    if (settings.weightedCentroid > 0)
         centroid = zeros(3,1);
         intensitySum = 0;
         for j=rangeX

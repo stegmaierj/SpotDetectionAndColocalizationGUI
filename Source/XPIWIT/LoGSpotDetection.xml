@@ -47,7 +47,7 @@
                 <parameter key="MaxSigma" value="11.00000" type="1" description="Maximum sigma value."/>
                 <parameter key="NormalizeAcrossScales" value="1" type="3" description="Normalize scales."/>
 				<parameter key="NormalizationExponent" value="2.5" type="1" description="Normalization exponent used for the scale space normalization."/>
-				<parameter key="WriteIntermediateResults" value="0" type="3" description="If enabled, the intermediate LoG filtered images are also saved (32bit)."/>
+				<parameter key="WriteIntermediateResults" value="1" type="3" description="If enabled, the intermediate LoG filtered images are also saved (32bit)."/>
             </arguments>
         </item>
         <item item_id="item_0006">

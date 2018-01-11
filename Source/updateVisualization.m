@@ -68,8 +68,10 @@ if (settings.maximumProjectionMode == true)
         if (isfield(settings, 'colocalizations1') && ~isempty(settings.colocalizations1) && settings.showColocalization == true)
             validIndices = find(~ismember(settings.seedPoints1Filtered(:,1), settings.colocalizations1(:,1)));
             plot(settings.seedPoints1Filtered(validIndices,3), settings.seedPoints1Filtered(validIndices,4), 'or');
+            %viscircles([settings.seedPoints1Filtered(validIndices,3), settings.seedPoints1Filtered(validIndices,4)], settings.seedPoints1Filtered(validIndices,2), 'Color', 'r');
         else
             plot(settings.seedPoints1Filtered(:,3), settings.seedPoints1Filtered(:,4), 'or');
+            %viscircles([settings.seedPoints1Filtered(:,3), settings.seedPoints1Filtered(:,4)], settings.seedPoints1Filtered(:,2), 'Color', 'r');
         end            
     end
 
@@ -79,8 +81,10 @@ if (settings.maximumProjectionMode == true)
         if (isfield(settings, 'colocalizations2') && ~isempty(settings.colocalizations2) && settings.showColocalization == true)
             validIndices = find(~ismember(settings.seedPoints2Filtered(:,1), settings.colocalizations2(:,1)));
             plot(settings.seedPoints2Filtered(validIndices,3), settings.seedPoints2Filtered(validIndices,4), 'og');
+            %viscircles([settings.seedPoints2Filtered(validIndices,3), settings.seedPoints2Filtered(validIndices,4)], settings.seedPoints2Filtered(validIndices,2), 'Color', 'g');
         else
             plot(settings.seedPoints2Filtered(:,3), settings.seedPoints2Filtered(:,4), 'og');
+            %viscircles([settings.seedPoints2Filtered(:,3), settings.seedPoints2Filtered(:,4)], settings.seedPoints2Filtered(:,2), 'Color', 'g');
         end
     end
     

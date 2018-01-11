@@ -248,7 +248,8 @@ function keyReleaseEventHandler(~,evt)
     elseif (strcmp(evt.Character, 'g'))
         %% show the help dialog
         PerformThresholdGridSearchAndColocalization;    
-        
+    elseif (strcmp(evt.Character, 'u'))
+        PerformSpotReestimation;
     elseif (strcmp(evt.Character, 'h'))
         %% show the help dialog
         showHelp;
