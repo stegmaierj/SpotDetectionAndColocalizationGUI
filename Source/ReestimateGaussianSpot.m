@@ -30,6 +30,7 @@
  %
  %%
 
+%% function to re-estimate a Gaussian spot based on the current location, radius and a raw image
 function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRadius, currentImage)
  
     global settings;
@@ -48,12 +49,15 @@ function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRad
     exitflag = 0;
     if (length(rangeZ) > 1)
         
+        %% desired output dimensions
+        ny=size(innerSnippet,1);
+        nx=size(innerSnippet,2);
+        nz=round(size(innerSnippet,3)*settings.zscale);
+        
         %% scale the image to be isotropic
-        ny=size(innerSnippet,1);nx=size(innerSnippet,2);nz=round(size(innerSnippet,3)*settings.zscale); %% desired output dimensions
-        [y, x, z]=...
-           ndgrid(linspace(1,size(innerSnippet,1),ny),...
-                  linspace(1,size(innerSnippet,2),nx),...
-                  linspace(1,size(innerSnippet,3),nz));
+        [y, x, z]= ndgrid(linspace(1,size(innerSnippet,1),ny),...
+                          linspace(1,size(innerSnippet,2),nx),...
+                          linspace(1,size(innerSnippet,3),nz));
         innerSnippet=interp3(innerSnippet,x,y,z);
 
         %% get the 3D indices from the linear index
@@ -63,6 +67,7 @@ function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRad
         fun = @(x) sum(innerSnippet(:) .* LaplacianOfGaussian([Y(:), X(:), Z(:)], [x(1),x(2),x(3)]', abs([x(4), x(4), x(4)]'), true));
         
         %% specify the initial location to start the optimization from
+        %% global coordinates are transformed to local coordinates of the snippet
         x0 = [currentLocation(2) - min(rangeY), currentLocation(1) - min(rangeX), (currentLocation(3) - min(rangeZ))*settings.zscale, currentRadius];
 
         %% perform the actual optimization
@@ -75,7 +80,7 @@ function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRad
         x(3) = (x(3) + min(rangeZ)*settings.zscale - 1) / settings.zscale;
     end
 
-    %% set the result variables only if a sub-pixel relocation took place and if the radius is larger than before
+    %% set the result variables only if optimization exited with success
     if (exitflag == 1)
         centroid = x([2,1,3]);
         radius = x(4);
@@ -84,21 +89,3 @@ function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRad
         radius = currentRadius;
     end
 end
-
-%% temporary 2D code
-%     else
-%         
-%         innerSnippet = max(innerSnippet,[], 3);
-%         [X, Y] = ind2sub(size(innerSnippet), 1:length(innerSnippet(:)));
-% 
-%         test = 1;
-%         fun = @(x) sum(innerSnippet(:) .* LaplacianOfGaussian([Y(:), X(:)], [x(1),x(2)]', abs([x(3), x(3)]'), true));
-%         %fun = @(x) sum(mygaussian .* LaplacianOfGaussian([X(:), Y(:)], [x(1),x(2)]', abs([x(3), x(3)]'), true));
-%         x0 = [currentLocation(2) - min(rangeY), currentLocation(1) - min(rangeX), currentRadius]
-% 
-%         %options = optimset('Display','iter','PlotFcns',@optimplotfval);
-%         x = fminsearch(fun, x0);
-%         x(1) = x(1) + min(rangeY) - 1;
-%         x(2) = x(2) + min(rangeX) - 1;
-%         x
-%         
