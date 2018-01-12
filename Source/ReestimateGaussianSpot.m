@@ -52,13 +52,13 @@ function [centroid, radius] = ReestimateGaussianSpot(currentLocation, currentRad
         %% desired output dimensions
         ny=size(innerSnippet,1);
         nx=size(innerSnippet,2);
-        nz=round(size(innerSnippet,3)*settings.zscale);
+        nz=floor(size(innerSnippet,3)*settings.zscale);
         
         %% scale the image to be isotropic
         [y, x, z]= ndgrid(linspace(1,size(innerSnippet,1),ny),...
                           linspace(1,size(innerSnippet,2),nx),...
                           linspace(1,size(innerSnippet,3),nz));
-        innerSnippet=interp3(innerSnippet,x,y,z);
+        innerSnippet=interp3(innerSnippet,x,y,z, 'linear');
 
         %% get the 3D indices from the linear index
         [X, Y, Z] = ind2sub(size(innerSnippet), 1:length(innerSnippet(:)));
