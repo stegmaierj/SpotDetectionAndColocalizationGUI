@@ -31,16 +31,47 @@
  %%
 
 %% initialize the global settings variable
-close all; 
-clear all;
+close all;
+if (exist('settings', 'var'))
+    clearvars -except settings;
+else
+    clearvars;
+end
 global settings;
 
-%% ask for voxel resulution
+%% ask for voxel resulution and filtering parameters
 prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
-defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
+if (isfield(settings, 'physicalSpacingXY') && ...
+    isfield(settings, 'physicalSpacingZ') && ...
+    isfield(settings, 'gaussianSigma') && ...
+    isfield(settings, 'minSigma') && ...
+    isfield(settings, 'maxSigma') && ...
+    isfield(settings, 'numScales') && ...
+    isfield(settings, 'colocalizationCriterion') && ...
+    isfield(settings, 'axialColocalizationFactor') && ...
+    isfield(settings, 'use4DScaleSpace'))
+    defaultans = {num2str(settings.physicalSpacingXY), ...
+                  num2str(settings.physicalSpacingZ), ...
+                  num2str(settings.gaussianSigma), ...
+                  num2str(settings.minSigma), ...
+                  num2str(settings.maxSigma), ...
+                  num2str(settings.numScales), ...
+                  num2str(settings.colocalizationCriterion), ...
+                  num2str(settings.axialColocalizationFactor), ...
+                  num2str(settings.use4DScaleSpace)};
+else
+    defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
+end
+
+%% open parameter settings dialog
 answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+if (isempty(answer))
+    return;
+end
+
+%% initialize the settings variable with the provided parameters
 settings.physicalSpacingXY = str2double(answer{1});
 settings.physicalSpacingZ = str2double(answer{2});
 settings.physicalSpacing = [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ];
@@ -82,28 +113,37 @@ if (settings.use4DScaleSpace == false)
     settings.offset = 1;
 end
 
-
+%% add path to the tiff handling scripts
 if (~isdeployed())
     addpath('ThirdParty/saveastiff_4.3/');
 end
 
-%% specify inputfiles
-[filename1, pathname1] = uigetfile({'*.tif', 'TIFF-Image'; '*.*', 'ITK Compatible Single Channel Image'}, 'Please select channel 1 image (single channel 3D Tiff file)', 'MultiSelect', 'off');
-[filename2, pathname2] = uigetfile({'*.tif', 'TIFF-Image'; '*.*', 'ITK Compatible Single Channel Image'}, 'Please select channel 2 image (single channel 3D Tiff file)', 'MultiSelect', 'off');
-settings.inputChannel1Absolute = [pathname1 filename1];
-settings.inputChannel2Absolute = [pathname2 filename2];
-settings.outputFolder = [uigetdir(pwd, 'Please select output folder') filesep];
-% settings.inputChannel1Absolute = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Data/C1-S3-EphA4-60min-1-hyperstack-substack25_42-512.tif';
-% settings.inputChannel2Absolute = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Data/C2-S3-EphA4-60min-1-hyperstack-substack25_42-512.tif';
-% settings.outputFolder = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Processing/';
+%% check if input files are already present from a previous run and potentially re-use them
+if (isfield(settings, 'outputFolder') && isfield(settings, 'inputChannel1Absolute') && isfield(settings, 'inputChannel2Absolute'))
+    button = questdlg('Use previously loaded images and output path?');
+else
+    button = 'No';
+end
+
+%% specify inputfiles if they were not provided yet
+if (strcmp(button, 'No'))
+    [filename1, pathname1] = uigetfile({'*.tif', 'TIFF-Image'; '*.*', 'ITK Compatible Single Channel Image'}, 'Please select channel 1 image (single channel 3D Tiff file)', 'MultiSelect', 'off');
+    [filename2, pathname2] = uigetfile({'*.tif', 'TIFF-Image'; '*.*', 'ITK Compatible Single Channel Image'}, 'Please select channel 2 image (single channel 3D Tiff file)', 'MultiSelect', 'off');
+    settings.inputChannel1Absolute = [pathname1 filename1];
+    settings.inputChannel2Absolute = [pathname2 filename2];
+    settings.outputFolder = [uigetdir(pwd, 'Please select output folder') filesep];
+    % settings.inputChannel1Absolute = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Data/C1-S3-EphA4-60min-1-hyperstack-substack25_42-512.tif';
+    % settings.inputChannel2Absolute = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Data/C2-S3-EphA4-60min-1-hyperstack-substack25_42-512.tif';
+    % settings.outputFolder = '/Users/jstegmaier/GoogleDrive/Projects/2016/Caltech/Projects/AlexSpotDetection/Processing/';
+end
 
 %% adjust the xml template according to the selected input
 templateFile = fopen('XPIWIT/LoGSpotDetectionTemplate.xml', 'rb');
 xmlFile = fopen('XPIWIT/LoGSpotDetection.xml', 'wb');
 
+%% replace the parameter tags by the actual values
 currentLine = fgets(templateFile);
 while ischar(currentLine)
-
     currentLine = strrep(currentLine, '%SPACINGX%', num2str(1));
     currentLine = strrep(currentLine, '%SPACINGY%', num2str(1));
     currentLine = strrep(currentLine, '%SPACINGZ%', sprintf('%.5f', settings.physicalSpacingZ / settings.physicalSpacingXY));
@@ -118,6 +158,7 @@ while ischar(currentLine)
     currentLine = fgets(templateFile);
 end
 
+%% close the template and xml files
 fclose(templateFile);
 fclose(xmlFile);
 
@@ -130,12 +171,14 @@ elseif (isunix)
     cd XPIWIT/Ubuntu/
 end
 
+%% specify the XPIWIT command
 XPIWITCommand1 = ['./XPIWIT.sh ' ...
                  '--output "' settings.outputFolder '" ' ...
                  '--input "0, ' settings.inputChannel1Absolute ', 3, float" ' ...
                  '--xml "../LoGSpotDetection.xml" ' ...
                  '--seed 0 --lockfile off --subfolder "filterid, filtername" --outputformat "imagename, filtername" --end'];
 
+%% replace slashes by backslashes for windows systems
 if (ispc == true)
     XPIWITCommand1 = strrep(XPIWITCommand1, './XPIWIT.sh', 'XPIWIT.exe');
     XPIWITCommand1 = strrep(XPIWITCommand1, '\', '/');
@@ -160,7 +203,7 @@ cd ../../;
 [folder1, settings.file1, ext1] = fileparts(settings.inputChannel1Absolute);
 [folder2, settings.file2, ext2] = fileparts(settings.inputChannel2Absolute);
 
-%% load raw images
+%% load raw images and extract statistical properties
 settings.imageChannel1 = im2double(loadtiff(settings.inputChannel1Absolute));
 settings.imageChannel2 = im2double(loadtiff(settings.inputChannel2Absolute));
 settings.imageChannel1MaxProj = (max(settings.imageChannel1, [], 3));
@@ -168,11 +211,14 @@ settings.imageChannel2MaxProj = (max(settings.imageChannel2, [], 3));
 settings.minIntensity = min(min(settings.imageChannel1(:)), min(settings.imageChannel2(:)));
 settings.maxIntensity = max(max(settings.imageChannel1(:)), max(settings.imageChannel2(:)));
 
+%% specify the figure boundaries
 settings.xLim = [0, size(settings.imageChannel1,1)];
 settings.yLim = [0, size(settings.imageChannel1,2)];
 
 %% load detected seed points
 if (settings.use4DScaleSpace == false)
+    
+    %% if no 4D scale space is used, load the detections provided by XPIWIT
     settings.seedPoints1 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file1 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);
     settings.seedPoints2 = dlmread([settings.outputFolder 'item_0006_ExtractLocalExtremaFilter/' settings.file2 '_ExtractLocalExtremaFilter_KeyPoints.csv'], ';', 1, 0);
     settings.seedPoints1(:,3:4) = settings.seedPoints1(:,3:4) + settings.offset;
@@ -182,21 +228,30 @@ if (settings.use4DScaleSpace == false)
     settings.seedPoints1(:,7:end) = [];
     settings.seedPoints2(:,7:end) = [];
 else
+    
+    %% specify the scale range and initialize the scale space image
     scaleRange = settings.minSigma:settings.sigmaStep:settings.maxSigma;
     numScales = length(scaleRange);
     imageSize = size(settings.imageChannel1);
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
+    
+    % load the intermediate scale images and find the 4D scale space
+    % extrema of channel 1
     currentFiles = dir([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/*Scale=*.tif']);
     for i=1:length(scaleRange)
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file1 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
     settings.seedPoints1 = FindScaleSpaceExtrema(settings.imageChannel1, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
 
+    % load the intermediate scale images and find the 4D scale space
+    % extrema of channel 2
     scaleSpace = zeros(imageSize(1), imageSize(2), imageSize(3), numScales);
     for i=1:length(scaleRange)
         scaleSpace(:,:,:,i) = loadtiff([settings.outputFolder 'item_0005_LoGScaleSpaceMaximumProjectionFilter/' settings.file2 '_LoGScaleSpaceMaximumProjectionFilter_Scale=' sprintf('%02d', i) '.tif']);
     end    
     settings.seedPoints2 = FindScaleSpaceExtrema(settings.imageChannel2, scaleSpace, [settings.physicalSpacingXY, settings.physicalSpacingXY, settings.physicalSpacingZ], scaleRange/settings.physicalSpacingXY, -1);
+    
+    %% remove intermediate results
     clear scaleSpace;
     try
         rmdir([settings.outputFolder 'input'], 's');
@@ -208,12 +263,16 @@ else
         disp(['Intermediate results could not be cleared - try manually deleting temporary results: ' settings.outputFolder]);
     end
 end
+
+%% initialize the filtered seed points and perform centroid re-estimation based on local intensities
 settings.seedPoints1Filtered = settings.seedPoints1;
 settings.seedPoints2Filtered = settings.seedPoints2;
 PrepareSeedPoints;
 
+%% spefify an initial threshold step based on the input image intensities
 settings.globalThresholdStep = (max(max(settings.imageChannel1(:)), max(settings.imageChannel2(:))) - min(min(settings.imageChannel1(:)), min(settings.imageChannel2(:)))) / 1000;
 
+%% open the main figure
 settings.mainFigure = figure(1);
 
 %% mouse, keyboard events and window title

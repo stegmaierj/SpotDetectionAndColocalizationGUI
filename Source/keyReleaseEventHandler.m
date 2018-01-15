@@ -124,6 +124,12 @@ function keyReleaseEventHandler(~,evt)
             end
 
             answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+            
+            if (isempty(answer))
+                settings.showScaleBar = false;
+                return;
+            end
+            
             settings.scaleBarLengthMicrons = str2double(answer{1});
             settings.scaleBarLengthPixels = str2double(answer{1}) / settings.physicalSpacingXY;
             settings.scaleBarHeight = str2double(answer{2});
