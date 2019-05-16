@@ -23,7 +23,7 @@
                 <parameter key="SpacingX" value="%SPACINGX%" type="1" description="Original spacing in the first dimension"/>
                 <parameter key="SpacingY" value="%SPACINGY%" type="1" description="Original spacing in the second dimension"/>
                 <parameter key="SpacingZ" value="%SPACINGZ%" type="1" description="Original spacing in the third dimension"/>
-                <parameter key="InputMaximumValue" value="65535" type="1"/>
+                <parameter key="InputMaximumValue" value="%BITDEPTH%" type="1"/>
             </arguments>
         </item>
         <item item_id="item_0005">
@@ -68,10 +68,10 @@
                 <parameter key="Compression" value="1" type="3" description="If set to 1, compression is used for file saving."/>
                 <parameter key="Precision" value="16" type="2" description="Switch between uint8 and uint16 result image types."/>
                 <parameter key="KeyPointThreshold" value="-1" type="1" description="Minium value for extrema. If set to -1 an automatic selection based on the mean intensity and the intensity standard deviation are used."/>
-                <parameter key="StdDevMultiplicator" value="0" type="1" description="Multiplicator for the standard deviation. If automatic threshold selection is used, all seeds below (mu + StdDevMultiplicator * sigma) are rejected. "/>
+                <parameter key="StdDevMultiplicator" value="2" type="1" description="Multiplicator for the standard deviation. If automatic threshold selection is used, all seeds below (mu + StdDevMultiplicator * sigma) are rejected. "/>
                 <parameter key="QuantileThreshold" value="-1" type="1" description="If set to a value between 0 and 1, values within the respective quantile are rejected."/>
                 <parameter key="KeyPointIndexOffset" value="0" type="2" description="Adds an offset to the coordinates of each seed point. E.g. useful for MATLABs 1-based indexing."/>
-                <parameter key="Neighborhood3D" value="1" type="2" description="0 to search in 2D only, 1 for searching in 3D only and 2 for searching in both 2D and 3D."/>
+                <parameter key="Neighborhood3D" value="0" type="2" description="0 to search in 2D only, 1 for searching in 3D only and 2 for searching in both 2D and 3D."/>
                 <parameter key="NeighborhoodRadius" value="2" type="2" description="The neighborhood radius of the local extrema search."/>
                 <parameter key="MinimumSeedCombinations" value="1" type="2" description="If detection in 2D and 3D is performed, seeds that were not multiply detected can be rejected."/>
                 <parameter key="FuseSeedPoints" value="0" type="3" description="Fuse extrema that lie within a small radius."/>

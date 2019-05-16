@@ -40,7 +40,7 @@ end
 global settings;
 
 %% ask for voxel resulution and filtering parameters
-prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:'};
+prompt = {'d_lateral (um):', 'd_axial (um):', 'sigma_pre (um):', 'sigma_min (um):', 'sigma_max (um):', 'n_scale (number of scales to consider):', 'd_coloc (-1: Bound. Sphere Int., >=0: Max Centroid Dist. in um):', 'axial coloc. factor (1: same as lateral, <1: allow larger axial distances):', 'Use 4D scale-space:', 'Image Dimension (2 or 3)', 'Bit Depth (8 or 16)'};
 dlg_title = 'Provide Project Settings';
 num_lines = 1;
 if (isfield(settings, 'physicalSpacingXY') && ...
@@ -51,7 +51,9 @@ if (isfield(settings, 'physicalSpacingXY') && ...
     isfield(settings, 'numScales') && ...
     isfield(settings, 'colocalizationCriterion') && ...
     isfield(settings, 'axialColocalizationFactor') && ...
-    isfield(settings, 'use4DScaleSpace'))
+    isfield(settings, 'use4DScaleSpace') && ...
+    isfield(settings, 'imageDimension') && ...
+    isfield(settings, 'bitDepth'))
     defaultans = {num2str(settings.physicalSpacingXY), ...
                   num2str(settings.physicalSpacingZ), ...
                   num2str(settings.gaussianSigma), ...
@@ -60,9 +62,11 @@ if (isfield(settings, 'physicalSpacingXY') && ...
                   num2str(settings.numScales), ...
                   num2str(settings.colocalizationCriterion), ...
                   num2str(settings.axialColocalizationFactor), ...
-                  num2str(settings.use4DScaleSpace)};
+                  num2str(settings.use4DScaleSpace), ...
+                  num2str(settings.imageDimension), ...
+                  num2str(settings.bitDepth)};
 else
-    defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1'};
+    defaultans = {'0.0624','0.42', '0.0624', '0.0624', '0.6864', '10', '-1', '1', '1', '2', '8'};
 end
 
 %% open parameter settings dialog
@@ -92,7 +96,7 @@ settings.gamma = [1,1];
 settings.globalThreshold = [0, 0];
 settings.thresholdChannel = 1;
 settings.thresholdMode = 1;
-settings.radiusMultiplier = 3;
+settings.radiusMultiplier = 2;
 settings.currentChannel = 3;
 settings.intensityIndex = 6;
 settings.colormapIndex = 1;
@@ -108,6 +112,8 @@ settings.showColocalization = true;
 settings.showDetections = true;
 settings.colormapStrings = {'gray', 'parula', 'jet'};
 settings.use4DScaleSpace = str2double(answer{9});
+settings.imageDimension = str2double(answer{10});
+settings.bitDepth = str2double(answer{11});
 settings.offset = 0;
 if (settings.use4DScaleSpace == false)
     settings.offset = 1;
@@ -153,6 +159,7 @@ while ischar(currentLine)
     currentLine = strrep(currentLine, '%GAUSSIANSIGMA%', num2str((settings.gaussianSigma / settings.physicalSpacingXY)^2));
     currentLine = strrep(currentLine, '%NORMALIZATIONEXPONENT%', num2str(2.5));
     currentLine = strrep(currentLine, '%WRITESCALESPACE%', num2str(settings.use4DScaleSpace));
+    currentLine = strrep(currentLine, '%BITDEPTH%', num2str(2^settings.bitDepth-1));
     
     fprintf(xmlFile, currentLine);
     currentLine = fgets(templateFile);
@@ -174,7 +181,7 @@ end
 %% specify the XPIWIT command
 XPIWITCommand1 = ['./XPIWIT.sh ' ...
                  '--output "' settings.outputFolder '" ' ...
-                 '--input "0, ' settings.inputChannel1Absolute ', 3, float" ' ...
+                 '--input "0, ' settings.inputChannel1Absolute ', ' num2str(settings.imageDimension) ', float" ' ...
                  '--xml "../LoGSpotDetection.xml" ' ...
                  '--seed 0 --lockfile off --subfolder "filterid, filtername" --outputformat "imagename, filtername" --end'];
 
@@ -188,7 +195,7 @@ system(XPIWITCommand1);
 %% perform seed detection for channel2
 XPIWITCommand2 = ['./XPIWIT.sh ' ...
                  '--output "' settings.outputFolder '" ' ...
-                 '--input "0, ' settings.inputChannel2Absolute ', 3, float" ' ...
+                 '--input "0, ' settings.inputChannel2Absolute ', ' num2str(settings.imageDimension) ', float" ' ...
                  '--xml "../LoGSpotDetection.xml" ' ...
                  '--seed 0 --lockfile off --subfolder "filterid, filtername" --outputformat "imagename, filtername" --end'];
 
@@ -227,6 +234,11 @@ if (settings.use4DScaleSpace == false)
     settings.seedPoints2(:,5) = round(settings.seedPoints2(:,5) / settings.zscale + settings.offset);
     settings.seedPoints1(:,7:end) = [];
     settings.seedPoints2(:,7:end) = [];
+    
+    if (settings.imageDimension < 3)
+        settings.seedPoints1(:,5) = 1;
+        settings.seedPoints2(:,5) = 1;
+    end
 else
     
     %% specify the scale range and initialize the scale space image

@@ -56,17 +56,26 @@ for i=1:size(settings.seedPoints1,1)
     
     %% get the current location and calculate the radii
     currentLocation = round(settings.seedPoints1(i,3:5));
-    innerRadius = settings.radiusMultiplier*round(settings.seedPoints1(i,2));
+    innerRadius = round(settings.seedPoints1(i,2));
     outerRadius = round(settings.radiusMultiplier*innerRadius);
     
     %% calculate the inner and outer ranges
     rangeX = max(1, currentLocation(1)-innerRadius):min(size(settings.imageChannel1,2), currentLocation(1)+innerRadius);
     rangeY = max(1, currentLocation(2)-innerRadius):min(size(settings.imageChannel1,1), currentLocation(2)+innerRadius);
-    rangeZ = max(1, currentLocation(3)-round(innerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(innerRadius/settings.zscale));
+    if (size(settings.imageChannel1,3) > 1)
+        rangeZ = max(1, currentLocation(3)-round(innerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(innerRadius/settings.zscale));
+    else
+        rangeZ = 1;
+    end
         
     rangeXBG = max(1, currentLocation(1)-outerRadius):min(size(settings.imageChannel1,2), currentLocation(1)+outerRadius);
     rangeYBG = max(1, currentLocation(2)-outerRadius):min(size(settings.imageChannel1,1), currentLocation(2)+outerRadius);
-    rangeZBG = max(1, currentLocation(3)-round(outerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(outerRadius/settings.zscale));
+    
+    if (size(settings.imageChannel1,3) > 1)
+        rangeZBG = max(1, currentLocation(3)-round(outerRadius/settings.zscale)):min(size(settings.imageChannel1,3), currentLocation(3)+round(outerRadius/settings.zscale));
+    else
+        rangeZBG = 1;
+    end
     
     %% extract intensity properties of the channel where the seeds were detected
     innerSnippet = settings.imageChannel1(rangeY, rangeX, rangeZ);
